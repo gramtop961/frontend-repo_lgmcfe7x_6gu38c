@@ -1,8 +1,18 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import Spline from '@splinetool/react-spline'
+// Lazy-load Spline to avoid blocking first paint and prevent flash-to-black on WebGL init
+const LazySpline = React.lazy(() => import('@splinetool/react-spline'))
 
-// Apple-inspired hero: obsidian tones, crystal/metal 3D, subtle parallax and refined motion
+// Detect WebGL support safely
+function hasWebGL() {
+  try {
+    const canvas = document.createElement('canvas')
+    return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl') || canvas.getContext('webgl2'))
+  } catch {
+    return false
+  }
+}
+
 const Hero = () => {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -12,6 +22,34 @@ const Hero = () => {
   const rotate3D = useTransform(scrollYProgress, [0, 1], [0, 10])
   const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0.2, 0.45])
 
+  // Feature-gate 3D: disable for reduced motion or missing WebGL
+  const prefersReduced = useMemo(() => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
+  const [enable3D, setEnable3D] = useState(false)
+
+  useEffect(() => {
+    if (prefersReduced) return setEnable3D(false)
+    // Only enable if WebGL is present
+    const ok = hasWebGL()
+    if (!ok) return setEnable3D(false)
+    // Stagger enabling to avoid initial flash
+    const t = setTimeout(() => setEnable3D(true), 250)
+    return () => clearTimeout(t)
+  }, [prefersReduced])
+
+  // Safety: if Spline renders a black frame (rare GPU quirk), hide it
+  const [hide3D, setHide3D] = useState(false)
+  useEffect(() => {
+    // Auto-hide if the tab reports WebGL context lost
+    const onLost = () => setHide3D(true)
+    window.addEventListener('webglcontextlost', onLost, { passive: true })
+    // Timeout fallback in case init takes too long
+    const fallback = setTimeout(() => setHide3D(true), 4000)
+    return () => {
+      window.removeEventListener('webglcontextlost', onLost)
+      clearTimeout(fallback)
+    }
+  }, [])
+
   return (
     <section ref={ref} className="relative min-h-[100vh] w-full overflow-hidden bg-[#0A0A0B]">
       {/* Cinematic lighting layers */}
@@ -20,12 +58,20 @@ const Hero = () => {
         <div className="absolute bottom-[-20%] left-1/2 h-[50vh] w-[70vw] -translate-x-1/2 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(214,67,245,0.08),transparent_70%)] blur-3xl" />
       </div>
 
-      {/* Spline 3D scene: polished metal / crystal object */}
-      <motion.div style={{ rotateZ: rotate3D }} className="absolute inset-0 z-0 pointer-events-none" aria-hidden>
-        <Spline scene="https://prod.spline.design/8F8fHFK2WlQ3u0qq/scene.splinecode" style={{ width: '100%', height: '100%' }} />
-      </motion.div>
+      {/* Spline 3D scene as strict background. Forced canvas layering via CSS class 'hero-3d'. */}
+      {enable3D && !hide3D && (
+        <motion.div
+          style={{ rotateZ: rotate3D }}
+          className="hero-3d absolute inset-0 z-0 pointer-events-none"
+          aria-hidden
+        >
+          <Suspense fallback={null}>
+            <LazySpline scene="https://prod.spline.design/8F8fHFK2WlQ3u0qq/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+          </Suspense>
+        </motion.div>
+      )}
 
-      {/* Contrast overlay for readability (always above Spline) */}
+      {/* Contrast overlay for readability (always above 3D) */}
       <motion.div style={{ opacity: overlayOpacity }} className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(65%_55%_at_50%_45%,rgba(0,0,0,0.0),rgba(0,0,0,0.55)_70%,rgba(0,0,0,0.8)_100%)]" />
 
       {/* Content */}
@@ -60,14 +106,14 @@ const Hero = () => {
             className="button-solid-gradient"
             aria-label="Explore features"
           >
-            Explore features
+            <span>Explore features</span>
           </a>
           <a
             href="#app"
             className="button-glass"
             aria-label="See the app"
           >
-            See the app
+            <span>See the app</span>
           </a>
         </motion.div>
 

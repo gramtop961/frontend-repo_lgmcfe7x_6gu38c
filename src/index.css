@@ -94,4 +94,14 @@
   .hc-text {
     color: rgba(255,255,255,0.92);
   }
+
+  /* Ensure any WebGL canvas from Spline stays behind content */
+  .hero-3d canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    mix-blend-mode: normal !important;
+    background: transparent !important;
+  }
 }
