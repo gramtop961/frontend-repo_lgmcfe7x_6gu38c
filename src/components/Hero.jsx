@@ -15,21 +15,21 @@ const Hero = () => {
   return (
     <section ref={ref} className="relative min-h-[100vh] w-full overflow-hidden bg-[#0A0A0B]">
       {/* Cinematic lighting layers */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute -top-40 left-1/2 h-[60vh] w-[80vw] -translate-x-1/2 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(255,255,255,0.08),transparent_70%)] blur-3xl" />
         <div className="absolute bottom-[-20%] left-1/2 h-[50vh] w-[70vw] -translate-x-1/2 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(214,67,245,0.08),transparent_70%)] blur-3xl" />
       </div>
 
       {/* Spline 3D scene: polished metal / crystal object */}
-      <motion.div style={{ rotateZ: rotate3D }} className="absolute inset-0">
+      <motion.div style={{ rotateZ: rotate3D }} className="absolute inset-0 z-0 pointer-events-none" aria-hidden>
         <Spline scene="https://prod.spline.design/8F8fHFK2WlQ3u0qq/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </motion.div>
 
-      {/* Contrast overlay for readability */}
-      <motion.div style={{ opacity: overlayOpacity }} className="pointer-events-none absolute inset-0 bg-[radial-gradient(65%_55%_at_50%_45%,rgba(0,0,0,0.0),rgba(0,0,0,0.55)_70%,rgba(0,0,0,0.8)_100%)]" />
+      {/* Contrast overlay for readability (always above Spline) */}
+      <motion.div style={{ opacity: overlayOpacity }} className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(65%_55%_at_50%_45%,rgba(0,0,0,0.0),rgba(0,0,0,0.55)_70%,rgba(0,0,0,0.8)_100%)]" />
 
       {/* Content */}
-      <motion.div style={{ y: yCopy }} className="relative z-10 mx-auto flex min-h-[100vh] max-w-7xl flex-col items-center justify-center px-6 text-center">
+      <motion.div style={{ y: yCopy }} className="relative z-20 mx-auto flex min-h-[100vh] max-w-7xl flex-col items-center justify-center px-6 text-center">
         <motion.span
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
