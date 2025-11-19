@@ -17,6 +17,23 @@
   body {
     @apply antialiased text-white bg-[#0A0A0B];
   }
+
+  /* Refined focus states for accessibility */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.24), 0 0 0 4px rgba(214,67,245,0.28);
+    border-radius: 0.75rem;
+  }
+
+  /* Respect reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
@@ -67,5 +84,14 @@
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     padding: 1px;
+  }
+
+  /* High-contrast utilities for dark surfaces */
+  .hc-surface {
+    background: #0E0E10; /* slightly lighter than obsidian to lift surfaces */
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .hc-text {
+    color: rgba(255,255,255,0.92);
   }
 }

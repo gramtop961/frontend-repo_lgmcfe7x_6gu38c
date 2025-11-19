@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Features from './components/Features'
 import AppPreview from './components/AppPreview'
 import Trust from './components/Trust'
+import Story from './components/Story'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <nav className="hidden items-center gap-6 text-sm text-white/60 sm:flex">
               <a href="#features" className="transition hover:text-white/80">Features</a>
               <a href="#app" className="transition hover:text-white/80">App</a>
+              <a href="#story" className="transition hover:text-white/80">Story</a>
               <a href="#trust" className="transition hover:text-white/80">Security</a>
             </nav>
             <a href="#cta" className="button-glass-gradient text-xs">Get the app</a>
@@ -29,6 +31,9 @@ function App() {
         <Hero />
         <Features />
         <AppPreview />
+        <section id="story">
+          <Story />
+        </section>
         <div id="trust">
           <Trust />
         </div>
@@ -40,7 +45,8 @@ function App() {
             <h3 className="text-2xl font-semibold md:text-3xl text-white">Join the next generation of banking</h3>
             <p className="mx-auto mt-2 max-w-2xl text-white/70">Be first to experience a sleek, modern way to manage money — private, fast, and designed with care.</p>
             <div className="mx-auto mt-6 flex max-w-md flex-col items-center gap-3 sm:flex-row">
-              <input type="email" placeholder="Enter your email" className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/10" />
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <input id="email" type="email" placeholder="Enter your email" className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
               <button className="button-solid-gradient h-11 w-full text-sm font-semibold sm:w-40">Notify me</button>
             </div>
           </div>
